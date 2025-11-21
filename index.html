@@ -42,21 +42,58 @@
             display: flex;
             gap: 20px;
             margin-bottom: 20px;
-            align-items: flex-end;
-            flex-wrap: wrap; /* Allows wrapping on smaller tablets */
+            align-items: flex-start; /* Changed from flex-end to align labels properly */
+            flex-wrap: wrap; 
         }
-        .control-group { flex: 1; min-width: 250px; } /* Min-width ensures fields don't get too small */
+        .control-group { flex: 1; min-width: 250px; }
         
         label { font-weight: 600; margin-bottom: 8px; display: block; color: #555; }
+
+        /* --- FIXED ALIGNMENT CSS --- */
+        /* Force all inputs and buttons to have the exact same height */
         input[type="text"], select { 
-            width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; /* 16px prevents zoom on iOS */
+            width: 100%; 
+            height: 45px; /* Fixed Height */
+            padding: 0 12px; /* Horizontal padding only */
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+            box-sizing: border-box; 
+            font-size: 16px;
+            line-height: 43px; /* Vertically centers text (height - borders) */
         }
 
-        /* Buttons */
-        button { border: none; border-radius: 5px; cursor: pointer; font-size: 16px; transition: background-color .3s; display: block; }
-        .btn-green { background-color: #28a745; color: white; padding: 15px 20px; width: 100%; margin-top: 20px; font-weight: bold; }
+        /* Wrapper to hold Select + Button side-by-side */
+        .input-wrapper {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        
+        /* Special class for the refresh button to match the select box */
+        .refresh-btn {
+            height: 45px; /* Matches input height exactly */
+            width: 45px;  /* Square button */
+            padding: 0;
+            background-color: #5c6566;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0; /* Prevents button from getting squished */
+            margin: 0; /* Remove default margins */
+        }
+        .refresh-btn:hover { background-color: #8ca7ac; }
+
+        /* Buttons (General) */
+        button.action-btn { border: none; border-radius: 5px; cursor: pointer; font-size: 16px; transition: background-color .3s; display: block; }
+        .btn-green { background-color: #28a745; color: white; padding: 15px 20px; width: 100%; margin-top: 20px; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
         .btn-green:hover { background-color: #218838; }
-        .btn-red { background-color: #dc3545; color: white; padding: 12px 20px; margin-top: 15px; width: 100%; }
+        .btn-red { background-color: #dc3545; color: white; padding: 12px 20px; margin-top: 15px; width: 100%; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
         .btn-red:hover { background-color: #c82333; }
 
         /* Web View Table Styles */
@@ -68,7 +105,7 @@
         
         /* Inputs inside table */
         .data-table input[type="checkbox"] { transform: scale(1.3); cursor: pointer; margin-right: 10px; }
-        .data-table input[type="number"] { width: 80px; padding: 8px; text-align: center; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
+        .data-table input[type="number"] { width: 80px; height: 35px; padding: 0 8px; text-align: center; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
         
         .total-row { font-weight: bold; background-color: #fff3cd !important; color: #856404; }
         #select-all-header { display: flex; align-items: center; cursor: pointer; }
@@ -89,7 +126,6 @@
 
             h1 { font-size: 1.5rem; margin-bottom: 20px; }
 
-            /* Stack controls vertically */
             .top-controls { flex-direction: column; gap: 15px; }
             .control-group { width: 100%; min-width: 100%; }
 
@@ -100,7 +136,6 @@
                 box-sizing: border-box;
             }
 
-            /* Hide Table Header visually but keep accessible if needed */
             .data-table thead { display: none; } 
 
             .data-table tr {
@@ -112,7 +147,6 @@
                 padding: 10px;
             }
 
-            /* Style each cell to look like a list item */
             .data-table td {
                 border: none;
                 border-bottom: 1px solid #eee;
@@ -125,14 +159,12 @@
 
             .data-table td:last-child { border-bottom: none; }
 
-            /* Add labels via CSS for context */
             .data-table td:nth-of-type(1) { 
-                /* Subject/Checkbox row */
                 justify-content: flex-start; 
                 text-align: left;
                 font-weight: bold;
                 background: #f8f9fa;
-                margin: -10px -10px 10px -10px; /* Pull to edges */
+                margin: -10px -10px 10px -10px;
                 padding: 12px 15px;
                 border-radius: 8px 8px 0 0;
                 border-bottom: 1px solid #ddd;
@@ -143,7 +175,6 @@
             .data-table td:nth-of-type(4):before { content: "Quantity:"; font-weight: 600; color: #666; }
             .data-table td:nth-of-type(5):before { content: "Total:"; font-weight: 600; color: #666; }
 
-            /* Special styling for the total row at the bottom */
             .data-table tr:last-child {
                 background-color: #fff3cd;
                 border: 1px solid #ffeeba;
@@ -155,23 +186,17 @@
         }
 
         /* ============================
-           PRINT / MEMO STYLES (FIXED)
+           PRINT / MEMO STYLES
            ============================ */
         .memo-container { display: none; }
 
         @media print {
             @page { size: A4; margin: 6mm; }
             body { background-color: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; }
-            
-            /* Hide web interface */
             body > #app > *:not(.memo-output) { display: none !important; }
-            
-            /* Reset App container */
             #app { box-shadow: none; border: none; padding: 0; margin: 0; max-width: 100%; width: 100%; }
-
             .memo-container { display: block !important; width: 100%; }
 
-            /* Memo Specific CSS */
             .memo-header-img { width: 100%; max-height: 100px; object-fit: contain; display: block; margin-bottom: 5px; }
             .memo-meta { margin-bottom: 5px; border-bottom: 1px solid #000; padding-bottom: 5px; }
             .memo-meta h2 { margin: 2px 0; text-align: center; color: #000; font-size: 16px; }
@@ -201,9 +226,15 @@
         <div class="top-controls">
             <div class="control-group">
                 <label for="class-select">Select Class:</label>
-                <select id="class-select" onchange="displayBooks()">
-                    <option value="">-- Select Class --</option>
-                </select>
+                <div class="input-wrapper">
+                    <select id="class-select" onchange="displayBooks()">
+                        <option value="">-- Select Class --</option>
+                    </select>
+                    <button onclick="forceRefreshData()" class="refresh-btn" title="Update Prices from Sheet">
+                        ↻
+                    </button>
+                </div>
+                <small style="color: #888; font-size: 11px; margin-top: 4px; display: block;">Click ↻ if you updated the Google Sheet.</small>
             </div>
             
             <div class="control-group">
@@ -247,11 +278,12 @@ const SHEETS = [
 // CSV Base URL
 const BASE = "https://docs.google.com/spreadsheets/d/1htWKKFov6IgbkJTqrhXl-EvvHzZlyWHOsNAQScfarw0/export?format=csv&gid=";
 
-// =====================================================
 // SECURITY CONFIGURATION
-// =====================================================
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxXwv4kLdQI7L47GJ34QhJLZwmsVluOyIlF0Yb06q0YSK2gLAGmNgj0RyBFpCFA8e4z/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwAumkNBiaZk8DUtpHKqQrwHnBwsnDDuHFWiZNcF1KjFMhaE8u5xP-Qsh80qI7SosxG/exec';
 const SCRIPT_SECRET_KEY = "Sec-9928-BookSale-Auth-v1"; 
+
+// CACHE SETTINGS
+const CACHE_PREFIX = "bookApp_v1_"; 
 
 /* ========= Utilities ========= */
 function csvToRows(str) {
@@ -319,19 +351,38 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-/* ========================= Load CSV ========================= */
+/* ========================= Load CSV with Cache ========================= */
+function forceRefreshData() {
+    const selectedClass = document.getElementById('class-select').value;
+    if(!selectedClass) { alert("Please select a class first."); return; }
+    localStorage.removeItem(CACHE_PREFIX + selectedClass);
+    alert(`Cache cleared for ${selectedClass}. Downloading fresh data...`);
+    displayBooks(); 
+}
+
 async function loadBooksForClass(className) {
   const sheet = SHEETS.find(s => s.name === className);
   if (!sheet) return [];
-  const url = BASE + sheet.gid;
+  
+  const cacheKey = CACHE_PREFIX + className;
   const booksListDiv = document.getElementById('books-list');
-  booksListDiv.innerHTML = '<span class="loader">Loading books...</span>';
 
+  const cachedData = localStorage.getItem(cacheKey);
+  if (cachedData) {
+      console.log("Loaded from cache:", className);
+      return JSON.parse(cachedData);
+  }
+
+  booksListDiv.innerHTML = '<span class="loader">Downloading data from server... please wait...</span>';
+
+  const url = BASE + sheet.gid;
   try {
     const resp = await fetch(url);
     if (!resp.ok) throw new Error('Fetch failed');
     const csv = await resp.text();
-    return parseCSVToObjects(csv);
+    const parsedData = parseCSVToObjects(csv);
+    localStorage.setItem(cacheKey, JSON.stringify(parsedData));
+    return parsedData;
   } catch (err) {
     console.error(err);
     booksListDiv.innerHTML = '<div style="color:#a00; padding:10px;">Error loading sheet.</div>';
@@ -348,6 +399,7 @@ async function displayBooks() {
   if (!selectedClass) return;
 
   const books = await loadBooksForClass(selectedClass);
+  
   if (!books || books.length === 0) {
     booksListDiv.innerHTML = '<div style="color:#555; padding:10px;">No books found for this class.</div>';
     window.bookData = window.bookData || {};
@@ -554,7 +606,6 @@ function generateMemo() {
 
   memoOutput.innerHTML = memoHTML;
   
-  // Log with security token
   const logData = { 
       class: selectedClass, 
       studentName: studentName, 
@@ -568,11 +619,8 @@ function generateMemo() {
 }
 
 function logSaleToGoogleSheet(data) {
-  // Inject the secret key into the payload
   const payload = { ...data, secret: SCRIPT_SECRET_KEY };
-
   if (!SCRIPT_URL.includes('/s/')) return;
-  
   fetch(SCRIPT_URL, {
     method: 'POST', mode: 'no-cors',
     headers: { 'Content-Type': 'application/json' },
