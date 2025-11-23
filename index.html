@@ -8,7 +8,18 @@
         /* ============================
            CORE & DESKTOP STYLES 
            ============================ */
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f4f4f9; color: #333; }
+        /* CHANGED: Font set to Times New Roman globally */
+        body { 
+            font-family: 'Times New Roman', Times, serif; 
+            margin: 0; 
+            background-color: #f4f4f9; 
+            color: #000000; 
+        }
+        
+        /* Ensure inputs and buttons also use Times New Roman */
+        input, select, button, textarea {
+            font-family: 'Times New Roman', Times, serif;
+        }
         
         /* Main Container */
         #app { 
@@ -34,7 +45,7 @@
             color: #007bff; 
             font-weight: 700;
             margin-bottom: 30px;
-            font-size: 1.8rem;
+            font-size: 2.2rem; /* Slightly increased for Times New Roman readability */
         }
 
         /* Input Row Layout */
@@ -42,12 +53,12 @@
             display: flex;
             gap: 20px;
             margin-bottom: 20px;
-            align-items: flex-start; /* Changed from flex-end to align labels properly */
+            align-items: flex-start; 
             flex-wrap: wrap; 
         }
         .control-group { flex: 1; min-width: 250px; }
         
-        label { font-weight: 600; margin-bottom: 8px; display: block; color: #555; }
+        label { font-weight: 600; margin-bottom: 8px; display: block; color: #555; font-size: 1.1rem; }
 
         /* --- FIXED ALIGNMENT CSS --- */
         /* Force all inputs and buttons to have the exact same height */
@@ -58,8 +69,8 @@
             border: 1px solid #ccc; 
             border-radius: 4px; 
             box-sizing: border-box; 
-            font-size: 16px;
-            line-height: 43px; /* Vertically centers text (height - borders) */
+            font-size: 18px; /* Increased font size slightly for Times New Roman */
+            line-height: 43px; 
         }
 
         /* Wrapper to hold Select + Button side-by-side */
@@ -71,8 +82,8 @@
         
         /* Special class for the refresh button to match the select box */
         .refresh-btn {
-            height: 45px; /* Matches input height exactly */
-            width: 45px;  /* Square button */
+            height: 45px; 
+            width: 45px;  
             padding: 0;
             background-color: #5c6566;
             color: white;
@@ -84,22 +95,22 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-shrink: 0; /* Prevents button from getting squished */
-            margin: 0; /* Remove default margins */
+            flex-shrink: 0; 
+            margin: 0; 
         }
         .refresh-btn:hover { background-color: #8ca7ac; }
 
         /* Buttons (General) */
-        button.action-btn { border: none; border-radius: 5px; cursor: pointer; font-size: 16px; transition: background-color .3s; display: block; }
-        .btn-green { background-color: #28a745; color: white; padding: 15px 20px; width: 100%; margin-top: 20px; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        button.action-btn { border: none; border-radius: 5px; cursor: pointer; font-size: 18px; transition: background-color .3s; display: block; }
+        .btn-green { background-color: #28a745; color: white; padding: 15px 20px; width: 100%; margin-top: 20px; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; font-size: 18px; }
         .btn-green:hover { background-color: #218838; }
-        .btn-red { background-color: #dc3545; color: white; padding: 12px 20px; margin-top: 15px; width: 100%; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        .btn-red { background-color: #dc3545; color: white; padding: 12px 20px; margin-top: 15px; width: 100%; border: none; border-radius: 5px; cursor: pointer; font-size: 18px; }
         .btn-red:hover { background-color: #c82333; }
 
         /* Web View Table Styles */
         #books-list { margin-top: 20px; min-height: 40px; }
         .data-table { width: 100%; border-collapse: collapse; }
-        .data-table th, .data-table td { border: 1px solid #ddd; padding: 12px; text-align: left; font-size: 14px; vertical-align: middle; }
+        .data-table th, .data-table td { border: 1px solid #ddd; padding: 12px; text-align: left; font-size: 16px; vertical-align: middle; }
         .data-table th { background-color: #f8f9fa; color: #333; font-weight: bold; }
         .data-table tr:nth-child(even) { background-color: #f9f9f9; }
         
@@ -109,7 +120,7 @@
         
         .total-row { font-weight: bold; background-color: #fff3cd !important; color: #856404; }
         #select-all-header { display: flex; align-items: center; cursor: pointer; }
-        .loader { display: inline-block; padding: 4px 8px; background: #e9ecef; border-radius: 4px; font-size: .9em; margin-left: 8px; }
+        .loader { display: inline-block; padding: 4px 8px; background: #e9ecef; border-radius: 4px; font-size: 1em; margin-left: 8px; }
 
         /* ============================
            MOBILE RESPONSIVE STYLES 
@@ -124,7 +135,7 @@
                 padding: 15px; 
             }
 
-            h1 { font-size: 1.5rem; margin-bottom: 20px; }
+            h1 { font-size: 1.8rem; margin-bottom: 20px; }
 
             .top-controls { flex-direction: column; gap: 15px; }
             .control-group { width: 100%; min-width: 100%; }
@@ -192,17 +203,17 @@
 
         @media print {
             @page { size: A4; margin: 6mm; }
-            body { background-color: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; }
+            body { background-color: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; font-family: 'Times New Roman', Times, serif; }
             body > #app > *:not(.memo-output) { display: none !important; }
             #app { box-shadow: none; border: none; padding: 0; margin: 0; max-width: 100%; width: 100%; }
             .memo-container { display: block !important; width: 100%; }
 
             .memo-header-img { width: 100%; max-height: 100px; object-fit: contain; display: block; margin-bottom: 5px; }
             .memo-meta { margin-bottom: 5px; border-bottom: 1px solid #000; padding-bottom: 5px; }
-            .memo-meta h2 { margin: 2px 0; text-align: center; color: #000; font-size: 16px; }
-            .memo-meta table td { padding: 2px; font-size: 12px; }
+            .memo-meta h2 { margin: 2px 0; text-align: center; color: #000; font-size: 18px; font-weight: bold; text-transform: uppercase; }
+            .memo-meta table td { padding: 2px; font-size: 14px; }
 
-            .memo-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+            .memo-table { width: 100%; border-collapse: collapse; font-size: 12px; }
             .memo-table th, .memo-table td { border: 1px solid #000; padding: 3px 5px; vertical-align: middle; }
             .memo-table th { background-color: #ddd !important; font-weight: bold; text-align: center; }
 
@@ -212,7 +223,8 @@
             .col-qty { width: 7%; text-align: center; }
             .col-total { width: 20%; text-align: right; }
 
-            .footer-credit { margin-top: 10px; text-align: left; font-size: 8pt; color: #171616; width: 100%; font-family: Arial, sans-serif; }
+            /* CHANGED: Footer credit font to Times New Roman */
+            .footer-credit { margin-top: 10px; text-align: left; font-size: 9pt; color: #171616; width: 100%; font-family: 'arial', Times, serif; font-style: ; }
         }
     </style>
 </head>
@@ -234,7 +246,7 @@
                         ↻
                     </button>
                 </div>
-                <small style="color: #888; font-size: 11px; margin-top: 4px; display: block;">Click ↻ if you updated the Google Sheet.</small>
+                <small style="color: #888; font-size: 12px; margin-top: 4px; display: block;">Click ↻ if you updated the Google Sheet.</small>
             </div>
             
             <div class="control-group">
@@ -638,5 +650,3 @@ window.bookData = window.bookData || {};
 </script>
 </body>
 </html>
-
-
