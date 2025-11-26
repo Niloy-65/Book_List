@@ -45,7 +45,7 @@
             color: #007bff; 
             font-weight: 700;
             margin-bottom: 30px;
-            font-size: 2.2rem; /* Slightly increased for Times New Roman readability */
+            font-size: 2.2rem; 
         }
 
         /* Input Row Layout */
@@ -61,15 +61,14 @@
         label { font-weight: 600; margin-bottom: 8px; display: block; color: #555; font-size: 1.1rem; }
 
         /* --- FIXED ALIGNMENT CSS --- */
-        /* Force all inputs and buttons to have the exact same height */
         input[type="text"], select { 
             width: 100%; 
-            height: 45px; /* Fixed Height */
-            padding: 0 12px; /* Horizontal padding only */
+            height: 45px; 
+            padding: 0 12px; 
             border: 1px solid #ccc; 
             border-radius: 4px; 
             box-sizing: border-box; 
-            font-size: 18px; /* Increased font size slightly for Times New Roman */
+            font-size: 18px; 
             line-height: 43px; 
         }
 
@@ -80,7 +79,6 @@
             align-items: center;
         }
         
-        /* Special class for the refresh button to match the select box */
         .refresh-btn {
             height: 45px; 
             width: 45px;  
@@ -102,8 +100,21 @@
 
         /* Buttons (General) */
         button.action-btn { border: none; border-radius: 5px; cursor: pointer; font-size: 18px; transition: background-color .3s; display: block; }
-        .btn-green { background-color: #28a745; color: white; padding: 15px 20px; width: 100%; margin-top: 20px; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; font-size: 18px; }
+        
+        /* New Button Container */
+        .btn-row {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn-green { background-color: #28a745; color: white; padding: 15px 20px; width: 100%; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; font-size: 18px; }
         .btn-green:hover { background-color: #218838; }
+
+        /* New Blue Button for Save */
+        .btn-blue { background-color: #007bff; color: white; padding: 15px 20px; width: 100%; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; font-size: 18px; }
+        .btn-blue:hover { background-color: #0069d9; }
+
         .btn-red { background-color: #dc3545; color: white; padding: 12px 20px; margin-top: 15px; width: 100%; border: none; border-radius: 5px; cursor: pointer; font-size: 18px; }
         .btn-red:hover { background-color: #c82333; }
 
@@ -114,7 +125,6 @@
         .data-table th { background-color: #f8f9fa; color: #333; font-weight: bold; }
         .data-table tr:nth-child(even) { background-color: #f9f9f9; }
         
-        /* Inputs inside table */
         .data-table input[type="checkbox"] { transform: scale(1.3); cursor: pointer; margin-right: 10px; }
         .data-table input[type="number"] { width: 80px; height: 35px; padding: 0 8px; text-align: center; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
         
@@ -139,6 +149,9 @@
 
             .top-controls { flex-direction: column; gap: 15px; }
             .control-group { width: 100%; min-width: 100%; }
+
+            /* Buttons stack on mobile */
+            .btn-row { flex-direction: column; gap: 10px; }
 
             /* TABLE TO CARD TRANSFORMATION */
             .data-table, .data-table tbody, .data-table tr, .data-table td {
@@ -223,8 +236,7 @@
             .col-qty { width: 7%; text-align: center; }
             .col-total { width: 20%; text-align: right; }
 
-            /* CHANGED: Footer credit font to Times New Roman */
-            .footer-credit { margin-top: 10px; text-align: left; font-size: 9pt; color: #171616; width: 100%; font-family: 'arial', Times, serif; font-style: ; }
+            .footer-credit { margin-top: 10px; text-align: left; font-size: 7pt; color: #000000; width: 100%; font-family: 'arial', Times, serif; font-style: ; }
         }
     </style>
 </head>
@@ -262,7 +274,11 @@
 
         <div id="books-list"></div>
 
-        <button onclick="generateMemo()" class="btn-green">Generate Bill, Save Data, and Print</button>
+        <div class="btn-row">
+            <button onclick="printBill()" class="btn-green">Print Bill</button>
+            <button onclick="saveData()" class="btn-blue">Save Data</button>
+        </div>
+
         <button onclick="resetForm()" class="btn-red">Create New Bill</button>
 
         <div id="memo-output" class="memo-container memo-output"></div>
@@ -534,110 +550,148 @@ function calculateTotal() {
   if (gt) gt.textContent = grandTotal.toLocaleString() + ' BDT';
 }
 
-/* ============================================ Generate memo ============================================ */
-function generateMemo() {
-  calculateTotal();
-  const selectedClass = document.getElementById('class-select').value;
-  const memoOutput = document.getElementById('memo-output');
-  const studentName = document.getElementById('student-name').value;
-  const studentId = document.getElementById('student-id').value;
+/* ============================================ Refactored Actions ============================================ */
 
-  if (!selectedClass) { alert('Please select a Class.'); return; }
+// 1. Helper function to gather and validate data
+function collectFormData() {
+    calculateTotal();
+    const selectedClass = document.getElementById('class-select').value;
+    const studentName = document.getElementById('student-name').value;
+    const studentId = document.getElementById('student-id').value;
 
-  let finalTotal = 0;
-  const salesItems = [];
-  const quantityInputs = document.querySelectorAll('#books-list input[type="number"]');
-  const books = (window.bookData && window.bookData[selectedClass]) ? window.bookData[selectedClass] : [];
-
-  quantityInputs.forEach(input => {
-    const quantity = parseInt(input.value) || 0;
-    if (quantity > 0) {
-      const index = input.getAttribute('data-index');
-      const book = books[index];
-      const price = Number(book.Price) || 0;
-      const totalPrice = price * quantity;
-      finalTotal += totalPrice;
-      salesItems.push({ Subject: book.Subject, Book: book.Books, Price: price, Qty: quantity, Total: totalPrice });
+    if (!selectedClass) { 
+        alert('Please select a Class.'); 
+        return null; 
     }
-  });
 
-  if (salesItems.length === 0) { alert('Please select at least one book.'); return; }
+    let finalTotal = 0;
+    const salesItems = [];
+    const quantityInputs = document.querySelectorAll('#books-list input[type="number"]');
+    const books = (window.bookData && window.bookData[selectedClass]) ? window.bookData[selectedClass] : [];
 
-  // GENERATE MEMO
-  let memoHTML = `
-    <img src="image.png" class="memo-header-img" alt="Header">
-    
-    <div class="memo-meta">
-      <h2>Book Sales Memo</h2>
-      <table style="width:100%; margin-top:5px; border:none;">
-         <tr>
-            <td style="border:none;">Student Name: <strong>${studentName || 'N/A'}</strong></td>
-            <td style="border:none; text-align:right;">Date: <strong>${new Date().toLocaleDateString('en-GB')}</strong></td>
-         </tr>
-         <tr>
-            <td style="border:none;">Student ID: <strong>${studentId || 'N/A'}</strong></td>
-            <td style="border:none; text-align:right;">Class: <strong>${selectedClass}</strong></td>
-         </tr>
-      </table>
-    </div>
+    quantityInputs.forEach(input => {
+        const quantity = parseInt(input.value) || 0;
+        if (quantity > 0) {
+            const index = input.getAttribute('data-index');
+            const book = books[index];
+            const price = Number(book.Price) || 0;
+            const totalPrice = price * quantity;
+            finalTotal += totalPrice;
+            salesItems.push({ Subject: book.Subject, Book: book.Books, Price: price, Qty: quantity, Total: totalPrice });
+        }
+    });
 
-    <table class="memo-table">
-      <thead>
-        <tr>
-          <th class="col-sl">SL</th>
-          <th class="col-item">Book Name & Subject</th>
-          <th class="col-price">Unit Price</th>
-          <th class="col-qty">Qty</th>
-          <th class="col-total">Total (BDT)</th>
-        </tr>
-      </thead>
-      <tbody>
-  `;
+    if (salesItems.length === 0) { 
+        alert('Please select at least one book.'); 
+        return null; 
+    }
 
-  salesItems.forEach((item, i) => {
-    memoHTML += `
-      <tr>
-        <td class="col-sl" style="text-align:center;">${i+1}</td>
-        <td class="col-item">${escapeHtml(item.Book)} <br><span style="color:#555; font-size:0.9em;">(${escapeHtml(item.Subject)})</span></td>
-        <td class="col-price">${item.Price.toLocaleString()}</td>
-        <td class="col-qty">${item.Qty}</td>
-        <td class="col-total">${item.Total.toLocaleString()}</td>
-      </tr>
-    `;
-  });
-
-  memoHTML += `
-      <tr class="total-row">
-        <td colspan="4" style="text-align:right;">Grand Total Payable:</td>
-        <td class="col-total">${finalTotal.toLocaleString()} BDT</td>
-      </tr>
-    </tbody></table>
-    
-    <div class="footer-credit">System/Design/&/Developed/by/NA_Niloy</div>
-  `;
-
-  memoOutput.innerHTML = memoHTML;
-  
-  const logData = { 
-      class: selectedClass, 
-      studentName: studentName, 
-      studentId: studentId, 
-      total: finalTotal, 
-      items: salesItems 
-  };
-  logSaleToGoogleSheet(logData);
-
-  window.print();
+    return {
+        class: selectedClass,
+        studentName: studentName,
+        studentId: studentId,
+        total: finalTotal,
+        items: salesItems
+    };
 }
 
-function logSaleToGoogleSheet(data) {
-  const payload = { ...data, secret: SCRIPT_SECRET_KEY };
-  if (!SCRIPT_URL.includes('/s/')) return;
-  fetch(SCRIPT_URL, {
-    method: 'POST', mode: 'no-cors',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  }).catch(err => console.error("Logging Failed:", err));
+// 2. Button Action: Print Bill
+function printBill() {
+    const data = collectFormData();
+    if (!data) return; // Stop if validation fails
+
+    const memoOutput = document.getElementById('memo-output');
+    
+    // GENERATE MEMO HTML
+    let memoHTML = `
+      <img src="image.png" class="memo-header-img" alt="Header">
+      
+      <div class="memo-meta">
+        <h2>Book Sales Memo</h2>
+        <table style="width:100%; margin-top:5px; border:none;">
+           <tr>
+              <td style="border:none;">Student Name: <strong>${data.studentName || 'N/A'}</strong></td>
+              <td style="border:none; text-align:right;">Date: <strong>${new Date().toLocaleDateString('en-GB')}</strong></td>
+           </tr>
+           <tr>
+              <td style="border:none;">Student ID: <strong>${data.studentId || 'N/A'}</strong></td>
+              <td style="border:none; text-align:right;">Class: <strong>${data.class}</strong></td>
+           </tr>
+        </table>
+      </div>
+
+      <table class="memo-table">
+        <thead>
+          <tr>
+            <th class="col-sl">SL</th>
+            <th class="col-item">Book Name & Subject</th>
+            <th class="col-price">Unit Price</th>
+            <th class="col-qty">Qty</th>
+            <th class="col-total">Total (BDT)</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    data.items.forEach((item, i) => {
+      memoHTML += `
+        <tr>
+          <td class="col-sl" style="text-align:center;">${i+1}</td>
+          <td class="col-item">${escapeHtml(item.Book)} <br><span style="color:#555; font-size:0.9em;">(${escapeHtml(item.Subject)})</span></td>
+          <td class="col-price">${item.Price.toLocaleString()}</td>
+          <td class="col-qty">${item.Qty}</td>
+          <td class="col-total">${item.Total.toLocaleString()}</td>
+        </tr>
+      `;
+    });
+
+    memoHTML += `
+        <tr class="total-row">
+          <td colspan="4" style="text-align:right;">Grand Total Payable:</td>
+          <td class="col-total">${data.total.toLocaleString()} BDT</td>
+        </tr>
+      </tbody></table>
+      
+      <div class="footer-credit">System/Design/&/Developed/by/NA_Niloy</div>
+    `;
+
+    memoOutput.innerHTML = memoHTML;
+    
+    // Trigger Print
+    window.print();
+}
+
+// 3. Button Action: Save Data
+function saveData() {
+    const data = collectFormData();
+    if (!data) return; // Stop if validation fails
+
+    // Add secret for Google Script
+    const payload = { ...data, secret: SCRIPT_SECRET_KEY };
+    
+    if (!SCRIPT_URL.includes('/s/')) {
+        alert("Script URL is missing or invalid.");
+        return;
+    }
+
+    // Visual Feedback (optional, simplified)
+    const originalText = document.querySelector('.btn-blue').innerText;
+    document.querySelector('.btn-blue').innerText = "Saving...";
+
+    fetch(SCRIPT_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    })
+    .then(() => {
+        alert("Data sent to Google Sheet!");
+        document.querySelector('.btn-blue').innerText = originalText;
+    })
+    .catch(err => {
+        console.error("Logging Failed:", err);
+        alert("Failed to save data. Check console.");
+        document.querySelector('.btn-blue').innerText = originalText;
+    });
 }
 
 function resetForm() {
