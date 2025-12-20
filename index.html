@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Book Sales Memo Generator (All Books)</title>
+    <title>Book Sales Invoice Generator (All Books)</title>
     <style>
         /* ============================
             CORE & DESKTOP STYLES 
@@ -219,7 +219,7 @@
     <div id="app">
         <img src="image.png" alt="Academy Banner" class="site-header-img">
 
-        <h1>📚 Book Sales Memo</h1>
+        <h1>📚 Book Sales Invoice</h1>
 
         <div class="top-controls">
             <div class="control-group">
@@ -667,7 +667,7 @@ function printBill() {
     let memoHTML = `
       <img src="image.png" class="memo-header-img" alt="Header">
       <div class="memo-meta">
-        <h2>Book Sales Memo</h2>
+        <h2>Book Sales Invoice</h2>
         <table style="width:100%; margin-top:5px; border:none;">
             <tr>
               <td style="border:none;">Student Name: <strong>${data.studentName || 'N/A'}</strong></td>
@@ -760,3 +760,4 @@ function resetForm() {
 </script>
 </body>
 </html>
+
