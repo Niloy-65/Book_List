@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Book Sales Memo Generator</title>
+    <title>Book Sales Memo Generator (All Books)</title>
     <style>
         /* ============================
-           CORE & DESKTOP STYLES 
-           ============================ */
-        /* CHANGED: Font set to Times New Roman globally */
+            CORE & DESKTOP STYLES 
+            ============================ */
         body { 
             font-family: 'Times New Roman', Times, serif; 
             margin: 0; 
@@ -16,12 +15,10 @@
             color: #000000; 
         }
         
-        /* Ensure inputs and buttons also use Times New Roman */
         input, select, button, textarea {
             font-family: 'Times New Roman', Times, serif;
         }
         
-        /* Main Container */
         #app { 
             max-width: 950px; 
             margin: 20px auto; 
@@ -32,7 +29,6 @@
             border-top: 5px solid #007bff;
         }
 
-        /* Header Image */
         .site-header-img {
             display: block;
             max-width: 100%;
@@ -48,7 +44,6 @@
             font-size: 2.2rem; 
         }
 
-        /* Input Row Layout */
         .top-controls {
             display: flex;
             gap: 20px;
@@ -60,8 +55,7 @@
         
         label { font-weight: 600; margin-bottom: 8px; display: block; color: #555; font-size: 1.1rem; }
 
-        /* --- FIXED ALIGNMENT CSS --- */
-        input[type="text"], select { 
+        input[type="text"], input[type="search"], select { 
             width: 100%; 
             height: 45px; 
             padding: 0 12px; 
@@ -72,12 +66,7 @@
             line-height: 43px; 
         }
 
-        /* Wrapper to hold Select + Button side-by-side */
-        .input-wrapper {
-            display: flex;
-            gap: 5px;
-            align-items: center;
-        }
+        .input-wrapper { display: flex; gap: 5px; align-items: center; }
         
         .refresh-btn {
             height: 45px; 
@@ -98,120 +87,97 @@
         }
         .refresh-btn:hover { background-color: #8ca7ac; }
 
-        /* Buttons (General) */
         button.action-btn { border: none; border-radius: 5px; cursor: pointer; font-size: 18px; transition: background-color .3s; display: block; }
         
-        /* New Button Container */
-        .btn-row {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-        }
+        .btn-row { display: flex; gap: 15px; margin-top: 20px; }
 
         .btn-green { background-color: #28a745; color: white; padding: 15px 20px; width: 100%; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; font-size: 18px; }
         .btn-green:hover { background-color: #218838; }
 
-        /* New Blue Button for Save */
         .btn-blue { background-color: #007bff; color: white; padding: 15px 20px; width: 100%; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; font-size: 18px; }
         .btn-blue:hover { background-color: #0069d9; }
 
         .btn-red { background-color: #dc3545; color: white; padding: 12px 20px; margin-top: 15px; width: 100%; border: none; border-radius: 5px; cursor: pointer; font-size: 18px; }
         .btn-red:hover { background-color: #c82333; }
 
-        /* Web View Table Styles */
-        #books-list { margin-top: 20px; min-height: 40px; }
+        #books-list { margin-top: 20px; min-height: 40px; } 
+        
         .data-table { width: 100%; border-collapse: collapse; }
         .data-table th, .data-table td { border: 1px solid #ddd; padding: 12px; text-align: left; font-size: 16px; vertical-align: middle; }
-        .data-table th { background-color: #f8f9fa; color: #333; font-weight: bold; }
+        .data-table th { background-color: #f8f9fa; color: #333; font-weight: bold; } 
         .data-table tr:nth-child(even) { background-color: #f9f9f9; }
         
         .data-table input[type="checkbox"] { transform: scale(1.3); cursor: pointer; margin-right: 10px; }
         .data-table input[type="number"] { width: 80px; height: 35px; padding: 0 8px; text-align: center; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
         
+        /* WEB VIEW TOTAL ROW (Yellow) */
         .total-row { font-weight: bold; background-color: #fff3cd !important; color: #856404; }
-        #select-all-header { display: flex; align-items: center; cursor: pointer; }
+        
+        #select-all-header label { 
+            display: flex; 
+            align-items: center; 
+            cursor: pointer; 
+            font-size: 1em; 
+            margin-bottom: 0;
+            color: #333; 
+        }
         .loader { display: inline-block; padding: 4px 8px; background: #e9ecef; border-radius: 4px; font-size: 1em; margin-left: 8px; }
 
+        #search-container { margin-bottom: 15px; display: flex; align-items: center; gap: 15px; }
+        #search-container label { margin-bottom: 0; flex-shrink: 0; }
+        #book-search { flex-grow: 1; }
+        
+        #toast-notification {
+            visibility: hidden; 
+            min-width: 250px; 
+            background-color: #333; 
+            color: #fff; 
+            text-align: center; 
+            border-radius: 5px; 
+            padding: 16px; 
+            position: fixed; 
+            z-index: 9999; 
+            left: 50%; 
+            bottom: 30px; 
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+        #toast-notification.show { visibility: visible; opacity: 1; }
+
         /* ============================
-           MOBILE RESPONSIVE STYLES 
-           ============================ */
+            MOBILE RESPONSIVE STYLES 
+            ============================ */
         @media screen and (max-width: 768px) {
             body { margin: 0; background: #fff; }
-            #app { 
-                margin: 0; 
-                border-radius: 0; 
-                box-shadow: none; 
-                border-top: none; 
-                padding: 15px; 
-            }
-
+            #app { margin: 0; border-radius: 0; box-shadow: none; border-top: none; padding: 15px; }
             h1 { font-size: 1.8rem; margin-bottom: 20px; }
-
             .top-controls { flex-direction: column; gap: 15px; }
             .control-group { width: 100%; min-width: 100%; }
-
-            /* Buttons stack on mobile */
             .btn-row { flex-direction: column; gap: 10px; }
-
-            /* TABLE TO CARD TRANSFORMATION */
-            .data-table, .data-table tbody, .data-table tr, .data-table td {
-                display: block;
-                width: 100%;
-                box-sizing: border-box;
-            }
-
+            #search-container { flex-direction: column; align-items: flex-start; gap: 5px; }
+            #search-container label { width: 100%; }
+            #book-search { width: 100%; }
+            
+            .data-table, .data-table tbody, .data-table tr, .data-table td { display: block; width: 100%; box-sizing: border-box; }
             .data-table thead { display: none; } 
-
-            .data-table tr {
-                margin-bottom: 15px;
-                border: 1px solid #e0e0e0;
-                border-radius: 8px;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-                background: #fff;
-                padding: 10px;
-            }
-
-            .data-table td {
-                border: none;
-                border-bottom: 1px solid #eee;
-                padding: 10px 5px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                text-align: right;
-            }
-
+            .data-table tr { margin-bottom: 15px; border: 1px solid #e0e0e0; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); background: #fff; padding: 10px; }
+            .data-table td { border: none; border-bottom: 1px solid #eee; padding: 10px 5px; display: flex; justify-content: space-between; align-items: center; text-align: right; }
             .data-table td:last-child { border-bottom: none; }
-
-            .data-table td:nth-of-type(1) { 
-                justify-content: flex-start; 
-                text-align: left;
-                font-weight: bold;
-                background: #f8f9fa;
-                margin: -10px -10px 10px -10px;
-                padding: 12px 15px;
-                border-radius: 8px 8px 0 0;
-                border-bottom: 1px solid #ddd;
-            }
+            .data-table td:nth-of-type(1) { justify-content: flex-start; text-align: left; font-weight: bold; background: #f8f9fa; margin: -10px -10px 10px -10px; padding: 12px 15px; border-radius: 8px 8px 0 0; border-bottom: 1px solid #ddd; }
             
             .data-table td:nth-of-type(2):before { content: "Book:"; font-weight: 600; color: #666; margin-right: 10px;}
             .data-table td:nth-of-type(3):before { content: "Price:"; font-weight: 600; color: #666; }
             .data-table td:nth-of-type(4):before { content: "Quantity:"; font-weight: 600; color: #666; }
             .data-table td:nth-of-type(5):before { content: "Total:"; font-weight: 600; color: #666; }
 
-            .data-table tr:last-child {
-                background-color: #fff3cd;
-                border: 1px solid #ffeeba;
-            }
-            .data-table tr:last-child td {
-                justify-content: space-between;
-                text-align: right;
-            }
+            .data-table tr:last-child { background-color: #fff3cd; border: 1px solid #ffeeba; }
+            .data-table tr:last-child td { justify-content: space-between; text-align: right; }
         }
 
         /* ============================
-           PRINT / MEMO STYLES
-           ============================ */
+            PRINT / MEMO STYLES
+            ============================ */
         .memo-container { display: none; }
 
         @media print {
@@ -230,13 +196,21 @@
             .memo-table th, .memo-table td { border: 1px solid #000; padding: 3px 5px; vertical-align: middle; }
             .memo-table th { background-color: #ddd !important; font-weight: bold; text-align: center; }
 
+            /* Grid Column Widths */
             .col-sl { width: 5%; text-align: center; }
             .col-item { width: 55%; }
             .col-price { width: 13%; text-align: right; }
             .col-qty { width: 7%; text-align: center; }
             .col-total { width: 20%; text-align: right; }
 
-            .footer-credit { margin-top: 10px; text-align: left; font-size: 7pt; color: #000000; width: 100%; font-family: 'arial', Times, serif; font-style: ; }
+            /* --- FIXED: FORCE GRAND TOTAL TO BE BLACK AND BOLD --- */
+            .total-row td {
+                background-color: #ffffff !important; /* Remove yellow background */
+                color: #000000 !important;            /* Force Black Text */
+                font-weight: bold !important;         /* Force Bold */
+            }
+
+            .footer-credit { margin-top: 10px; text-align: left; font-size: 7pt; color: #000000; width: 100%; font-family: 'arial', Times, serif; }
         }
     </style>
 </head>
@@ -252,8 +226,7 @@
                 <label for="class-select">Select Class:</label>
                 <div class="input-wrapper">
                     <select id="class-select" onchange="displayBooks()">
-                        <option value="">-- Select Class --</option>
-                    </select>
+                        </select>
                     <button onclick="forceRefreshData()" class="refresh-btn" title="Update Prices from Sheet">
                         ↻
                     </button>
@@ -272,354 +245,440 @@
             </div>
         </div>
 
+        <div id="search-container">
+            <label for="book-search">Search Book/Year:</label>
+            <input type="search" id="book-search" placeholder="Search by Book Name or Year..." oninput="filterBooks()">
+        </div>
+        
         <div id="books-list"></div>
 
         <div class="btn-row">
-            <button onclick="printBill()" class="btn-green">Print Bill</button>
-            <button onclick="saveData()" class="btn-blue">Save Data</button>
+            <button onclick="printBill()" class="btn-green">🖨 Print</button>
+            <button onclick="saveData()" class="btn-blue">💾 Save Data</button>
         </div>
 
-        <button onclick="resetForm()" class="btn-red">Create New Bill</button>
+        <button onclick="resetForm()" class="btn-red">♻ Create New</button>
 
         <div id="memo-output" class="memo-container memo-output"></div>
     </div>
+    
+    <div id="toast-notification"></div>
 
 <script>
 /* =========================
-   Sheet settings
-   ========================= */
+    Sheet settings
+    ========================== */
 const SHEETS = [
-  { name: "Nursery", gid: "489499898" },
-  { name: "Reception", gid: "2027098770" },
-  { name: "Year 1", gid: "1401175034" },
-  { name: "Year 2", gid: "920652694" },
-  { name: "Year 3", gid: "853416613" },
-  { name: "Year 4", gid: "746344402" },
-  { name: "Year 5", gid: "1210824589" },
-  { name: "Year 6", gid: "863626512" },
-  { name: "Year 7", gid: "790069678" },
-  { name: "Year 8", gid: "622660697" },
-  { name: "Year 9", gid: "2022019354" },
-  { name: "Question Paper Set", gid: "596988486" }
+    { name: "Nursery", gid: "489499898" },
+    { name: "Reception", gid: "2027098770" },
+    { name: "Year 1", gid: "1401175034" },
+    { name: "Year 2", gid: "920652694" },
+    { name: "Year 3", gid: "853416613" },
+    { name: "Year 4", gid: "746344402" },
+    { name: "Year 5", gid: "1210824589" },
+    { name: "Year 6", gid: "863626512" },
+    { name: "Year 7", gid: "790069678" },
+    { name: "Year 8", gid: "622660697" },
+    { name: "Year 9", gid: "2022019354" },
+    { name: "Question Paper Set", gid: "596988486" }
 ];
 
-// CSV Base URL
 const BASE = "https://docs.google.com/spreadsheets/d/1htWKKFov6IgbkJTqrhXl-EvvHzZlyWHOsNAQScfarw0/export?format=csv&gid=";
-
-// SECURITY CONFIGURATION
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwAumkNBiaZk8DUtpHKqQrwHnBwsnDDuHFWiZNcF1KjFMhaE8u5xP-Qsh80qI7SosxG/exec';
 const SCRIPT_SECRET_KEY = "Sec-9928-BookSale-Auth-v1"; 
-
-// CACHE SETTINGS
 const CACHE_PREFIX = "bookApp_v1_"; 
+
+window.bookData = window.bookData || {}; 
+
+/* ================== PERSISTENT DATA MODEL ================== */
+let bookQuantities = {}; 
+let currentFullBookList = []; 
+/* =============================================================== */
 
 /* ========= Utilities ========= */
 function csvToRows(str) {
-  str = str.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-  const rows = [];
-  let cur = [];
-  let field = '';
-  let inQuotes = false;
-  for (let i = 0; i < str.length; i++) {
-    const ch = str[i];
-    if (inQuotes) {
-      if (ch === '"') {
-        if (str[i+1] === '"') { field += '"'; i++; } 
-        else { inQuotes = false; }
-      } else { field += ch; }
-    } else {
-      if (ch === '"') { inQuotes = true; } 
-      else if (ch === ',') { cur.push(field); field = ''; } 
-      else if (ch === '\n') { cur.push(field); field = ''; rows.push(cur); cur = []; } 
-      else { field += ch; }
+    str = str.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    const rows = [];
+    let cur = [];
+    let field = '';
+    let inQuotes = false;
+    for (let i = 0; i < str.length; i++) {
+        const ch = str[i];
+        if (inQuotes) {
+            if (ch === '"') {
+                if (str[i+1] === '"') { field += '"'; i++; } 
+                else { inQuotes = false; }
+            } else { field += ch; }
+        } else {
+            if (ch === '"') { inQuotes = true; } 
+            else if (ch === ',') { cur.push(field); field = ''; } 
+            else if (ch === '\n') { cur.push(field); field = ''; rows.push(cur); cur = []; } 
+            else { field += ch; }
+        }
     }
-  }
-  if (field !== '' || inQuotes) cur.push(field);
-  if (cur.length > 0) rows.push(cur);
-  return rows;
+    if (field !== '' || inQuotes) cur.push(field);
+    if (cur.length > 0) rows.push(cur);
+    return rows;
 }
 
 function parseCSVToObjects(csvText) {
-  const rows = csvToRows(csvText);
-  if (!rows || rows.length === 0) return [];
-  const headerRow = rows[0].map(h => (h || '').toString().trim());
-  const map = { Subject: -1, Books: -1, Price: -1 };
-  headerRow.forEach((h, idx) => {
-    const key = (h || '').replace(/\s+/g, ' ').trim().toLowerCase();
-    if (/^subject\b/i.test(h) || key.includes('subject')) map.Subject = idx;
-    else if (/^books?\b/i.test(h) || key.includes('book')) map.Books = idx;
-    else if (/^price\b/i.test(h) || key.includes('price') || key.includes('rate')) map.Price = idx;
-  });
-  if (map.Subject === -1 && headerRow.length >= 2) map.Subject = 1;
-  if (map.Books === -1 && headerRow.length >= 3) map.Books = 2;
-  if (map.Price === -1) map.Price = headerRow.length - 1;
+    if (!csvText) return [];
+    const rows = csvToRows(csvText);
+    if (!rows || rows.length === 0) return [];
+    const headerRow = rows[0].map(h => (h || '').toString().trim());
+    const map = { Subject: -1, Books: -1, Price: -1 };
+    headerRow.forEach((h, idx) => {
+        const key = (h || '').replace(/\s+/g, ' ').trim().toLowerCase();
+        if (/^subject\b/i.test(h) || key.includes('subject')) map.Subject = idx;
+        else if (/^books?\b/i.test(h) || key.includes('book')) map.Books = idx;
+        else if (/^price\b/i.test(h) || key.includes('price') || key.includes('rate')) map.Price = idx;
+    });
+    if (map.Subject === -1 && headerRow.length >= 2) map.Subject = 1; 
+    if (map.Books === -1 && headerRow.length >= 3) map.Books = 2;
+    if (map.Price === -1) map.Price = headerRow.length - 1;
 
-  const data = [];
-  for (let r = 1; r < rows.length; r++) {
-    const row = rows[r];
-    if (!row || row.every(c => (c || '').toString().trim() === '')) continue;
-    const subject = (row[map.Subject] || '').toString().trim();
-    const books = (row[map.Books] || '').toString().trim();
-    let priceRaw = (row[map.Price] || '').toString().trim();
-    priceRaw = priceRaw.replace(/[^0-9.\-]/g, '');
-    const price = parseFloat(priceRaw) || 0;
-    data.push({ Subject: subject || '-', Books: books || '-', Price: price });
-  }
-  return data;
+    const data = [];
+    for (let r = 1; r < rows.length; r++) {
+        const row = rows[r];
+        if (!row || row.every(c => (c || '').toString().trim() === '')) continue;
+        const subject = (row[map.Subject] || '').toString().trim();
+        const books = (row[map.Books] || '').toString().trim();
+        let priceRaw = (row[map.Price] || '').toString().trim();
+        priceRaw = priceRaw.replace(/[^0-9.\-]/g, '');
+        const price = parseFloat(priceRaw) || 0;
+        data.push({ Subject: subject || '-', Books: books || '-', Price: price });
+    }
+    return data;
 }
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;");
+}
+
+function showToast(message) {
+    const toast = document.getElementById("toast-notification");
+    if (!toast) return;
+    toast.textContent = message;
+    toast.className = "show";
+    setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
+}
+
 
 /* ============ DOM Binding ============ */
 document.addEventListener('DOMContentLoaded', () => {
-  const select = document.getElementById('class-select');
-  SHEETS.forEach(s => {
-    const option = document.createElement('option');
-    option.value = s.name;
-    option.textContent = s.name;
-    select.appendChild(option);
-  });
+    const select = document.getElementById('class-select');
+    const allOption = document.createElement('option');
+    allOption.value = 'All Books';
+    allOption.textContent = '-- All Books --';
+    select.appendChild(allOption);
+    SHEETS.forEach(s => {
+        const option = document.createElement('option');
+        option.value = s.name;
+        option.textContent = s.name;
+        select.appendChild(option);
+    });
+    if (select.value) { displayBooks(); }
 });
 
 /* ========================= Load CSV with Cache ========================= */
 function forceRefreshData() {
     const selectedClass = document.getElementById('class-select').value;
-    if(!selectedClass) { alert("Please select a class first."); return; }
-    localStorage.removeItem(CACHE_PREFIX + selectedClass);
-    alert(`Cache cleared for ${selectedClass}. Downloading fresh data...`);
+    if(!selectedClass) { showToast("Please select a class first."); return; }
+    const key = (selectedClass === 'All Books') ? (CACHE_PREFIX + 'ALL') : (CACHE_PREFIX + selectedClass);
+    localStorage.removeItem(key);
+    showToast(`Cache cleared for ${selectedClass}. Downloading fresh data...`);
     displayBooks(); 
 }
 
 async function loadBooksForClass(className) {
-  const sheet = SHEETS.find(s => s.name === className);
-  if (!sheet) return [];
-  
-  const cacheKey = CACHE_PREFIX + className;
-  const booksListDiv = document.getElementById('books-list');
+    const booksListDiv = document.getElementById('books-list');
+    if (!className) return [];
 
-  const cachedData = localStorage.getItem(cacheKey);
-  if (cachedData) {
-      console.log("Loaded from cache:", className);
-      return JSON.parse(cachedData);
-  }
+    if (className === 'All Books') {
+        const cacheKey = CACHE_PREFIX + 'ALL';
+        const cachedData = localStorage.getItem(cacheKey);
+        if (cachedData) {
+            return JSON.parse(cachedData);
+        }
 
-  booksListDiv.innerHTML = '<span class="loader">Downloading data from server... please wait...</span>';
+        booksListDiv.innerHTML = '<span class="loader">Downloading all classes data... please wait...</span>';
+        try {
+            const fetchPromises = SHEETS.map(s => fetch(BASE + s.gid).then(r => r.ok ? r.text() : '').catch(() => ''));
+            const csvResults = await Promise.all(fetchPromises);
+            let merged = [];
+            csvResults.forEach((csv, idx) => {
+                const parsed = parseCSVToObjects(csv);
+                parsed.forEach(item => { 
+                    if (item.Books && item.Books !== '-') {
+                        item._class = SHEETS[idx].name; 
+                        merged.push(item); 
+                    }
+                });
+            });
+            localStorage.setItem(cacheKey, JSON.stringify(merged));
+            return merged;
+        } catch (err) {
+            console.error(err);
+            booksListDiv.innerHTML = '<div style="color:#a00; padding:10px;">Error loading sheets.</div>';
+            return [];
+        }
+    }
 
-  const url = BASE + sheet.gid;
-  try {
-    const resp = await fetch(url);
-    if (!resp.ok) throw new Error('Fetch failed');
-    const csv = await resp.text();
-    const parsedData = parseCSVToObjects(csv);
-    localStorage.setItem(cacheKey, JSON.stringify(parsedData));
-    return parsedData;
-  } catch (err) {
-    console.error(err);
-    booksListDiv.innerHTML = '<div style="color:#a00; padding:10px;">Error loading sheet.</div>';
-    return [];
-  }
+    const sheet = SHEETS.find(s => s.name === className);
+    if (!sheet) return [];
+    const cacheKey = CACHE_PREFIX + className;
+    const cachedData = localStorage.getItem(cacheKey);
+    if (cachedData) {
+        return JSON.parse(cachedData);
+    }
+
+    booksListDiv.innerHTML = '<span class="loader">Downloading data from server... please wait...</span>';
+
+    try {
+        const resp = await fetch(BASE + sheet.gid);
+        if (!resp.ok) throw new Error('Fetch failed');
+        const csv = await resp.text();
+        const parsedData = parseCSVToObjects(csv);
+        const finalData = parsedData.filter(p => p.Books && p.Books !== '-').map(p => ({...p, _class: className}));
+        localStorage.setItem(cacheKey, JSON.stringify(finalData));
+        return finalData;
+    } catch (err) {
+        console.error(err);
+        booksListDiv.innerHTML = '<div style="color:#a00; padding:10px;">Error loading sheet.</div>';
+        return [];
+    }
 }
 
-/* ==================================== Display books ==================================== */
+/* ==================================== Display & Filter books ==================================== */
 async function displayBooks() {
-  const selectedClass = document.getElementById('class-select').value;
-  const booksListDiv = document.getElementById('books-list');
-  booksListDiv.innerHTML = '';
+    const selectedClass = document.getElementById('class-select').value;
+    const booksListDiv = document.getElementById('books-list');
+    booksListDiv.innerHTML = '';
+    const searchInput = document.getElementById('book-search');
+    if (searchInput) searchInput.value = '';
+    
+    bookQuantities = {}; 
+    currentFullBookList = [];
 
-  if (!selectedClass) return;
+    if (!selectedClass) return;
 
-  const books = await loadBooksForClass(selectedClass);
-  
-  if (!books || books.length === 0) {
-    booksListDiv.innerHTML = '<div style="color:#555; padding:10px;">No books found for this class.</div>';
-    window.bookData = window.bookData || {};
-    window.bookData[selectedClass] = [];
-    return;
-  }
-
-  let html = `
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>
-            <div id="select-all-header" onclick="toggleSelectAll()">
-              <input type="checkbox" id="select-all-books">
-              <span style="margin-left:5px;">Subject (Select All)</span>
-            </div>
-          </th>
-          <th>Book Name</th>
-          <th>Unit Price (BDT)</th>
-          <th>Quantity</th>
-          <th>Total Price (BDT)</th>
-        </tr>
-      </thead>
-      <tbody>
-  `;
-
-  books.forEach((book, index) => {
-    const bookId = `book-${index}`;
-    const priceDisplay = (typeof book.Price === 'number') ? book.Price.toLocaleString() : '0';
-    html += `
-      <tr id="${bookId}-row">
-        <td>
-          <input type="checkbox" id="check-book-${index}" data-index="${index}" onchange="updateQuantityAndCheckbox(this, 'checkbox')">
-          ${escapeHtml(book.Subject)}
-        </td>
-        <td>${escapeHtml(book.Books)}</td>
-        <td class="unit-price" data-price="${book.Price}">${priceDisplay}</td>
-        <td>
-          <input type="number" min="0" value="0" id="qty-book-${index}" data-index="${index}" oninput="updateQuantityAndCheckbox(this, 'input')">
-        </td>
-        <td id="${bookId}-total">0</td>
-      </tr>
-    `;
-  });
-
-  html += `
-      <tr class="grand-total-row">
-        <td colspan="4" style="text-align:right; font-weight:bold;">Grand Total:</td>
-        <td id="grand-total" class="total-row">0 BDT</td>
-      </tr>
-      </tbody>
-    </table>
-  `;
-
-  booksListDiv.innerHTML = html;
-  window.bookData = window.bookData || {};
-  window.bookData[selectedClass] = books;
+    currentFullBookList = await loadBooksForClass(selectedClass); 
+    window.bookData[selectedClass] = currentFullBookList;
+    renderBookTable(currentFullBookList); 
 }
 
-function escapeHtml(str) {
-  if (!str) return '';
-  return str.toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+function filterBooks() {
+    const selectedClass = document.getElementById('class-select').value;
+    if (!selectedClass || !currentFullBookList) return;
+
+    const searchInput = document.getElementById('book-search');
+    const rawQuery = (searchInput.value || '').toLowerCase().trim();
+
+    if (!rawQuery) {
+        renderBookTable(currentFullBookList);
+        return;
+    }
+
+    const searchTerms = rawQuery.split(/\s+/);
+    const filteredBooks = currentFullBookList.filter(book => {
+        const bookName = (book.Books || '').toLowerCase();
+        const subject = (book.Subject || '').toLowerCase();
+        const className = (book._class || '').toLowerCase();
+        const fullSearchText = `${bookName} ${subject} ${className}`;
+        return searchTerms.every(term => fullSearchText.includes(term));
+    });
+
+    renderBookTable(filteredBooks);
+}
+
+function renderBookTable(booksToRender) {
+    const booksListDiv = document.getElementById('books-list');
+    booksListDiv.innerHTML = '';
+
+    if (!booksToRender || booksToRender.length === 0) {
+        booksListDiv.innerHTML = '<div style="color:#555; padding:10px;">No books found. Try a different search term or select a different class.</div>';
+        return;
+    }
+    
+    let html = `
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>
+                <div id="select-all-header">
+                  <label for="select-all-books">
+                    <input type="checkbox" id="select-all-books" onclick="handleSelectAllClick(this)">
+                    <span style="margin-left:5px;">Subject (Select All)</span>
+                  </label>
+                </div>
+              </th>
+              <th>Book Name</th>
+              <th>Unit Price (BDT)</th>
+              <th>Quantity</th>
+              <th>Total Price (BDT)</th>
+            </tr>
+          </thead>
+          <tbody>
+    `;
+
+    let grandTotal = 0; 
+    booksToRender.forEach(book => {
+        const originalIndex = currentFullBookList.findIndex(b => b === book); 
+        if (originalIndex === -1) return; 
+        const bookId = `book-${originalIndex}`;
+        const price = Number(book.Price) || 0;
+        const priceDisplay = price.toLocaleString();
+        const quantity = bookQuantities[originalIndex] || 0; 
+        const isChecked = quantity > 0;
+        const itemTotal = price * quantity;
+        grandTotal += itemTotal;
+        const classLabel = book._class ? `<div style="font-size:0.85em;color:#777;">${escapeHtml(book._class)}</div>` : '';
+        html += `
+            <tr id="${bookId}-row">
+              <td>
+                <input type="checkbox" id="check-book-${originalIndex}" data-index="${originalIndex}" onchange="updateQuantityAndCheckbox(this, 'checkbox')" ${isChecked ? 'checked' : ''}>
+                ${escapeHtml(book.Subject)} ${classLabel}
+              </td>
+              <td>${escapeHtml(book.Books)}</td>
+              <td class="unit-price" data-price="${price}">${priceDisplay}</td>
+              <td>
+                <input type="number" min="0" value="${quantity}" id="qty-book-${originalIndex}" data-index="${originalIndex}" oninput="updateQuantityAndCheckbox(this, 'input')">
+              </td>
+              <td id="${bookId}-total">${itemTotal.toLocaleString()}</td>
+            </tr>
+        `;
+    });
+
+    html += `
+        <tr class="grand-total-row">
+          <td colspan="4" style="text-align:right; font-weight:bold;">Grand Total:</td>
+          <td id="grand-total" class="total-row">${grandTotal.toLocaleString()} BDT</td>
+        </tr>
+        </tbody>
+        </table>
+    `;
+    booksListDiv.innerHTML = html;
+    updateSelectAllStatus(); 
 }
 
 /* ========================= Logic ========================= */
-function toggleSelectAll() {
-  const masterCheckbox = document.getElementById('select-all-books');
-  masterCheckbox.checked = !masterCheckbox.checked;
-  selectAllBooks(masterCheckbox.checked);
+function handleSelectAllClick(masterCheckbox) {
+    selectAllBooks(masterCheckbox.checked);
+}
+
+function updateSelectAllStatus() {
+    const masterCheckbox = document.getElementById('select-all-books');
+    if (!masterCheckbox) return;
+    const displayedCheckboxes = document.querySelectorAll('#books-list input[type="checkbox"][id^="check-book-"]');
+    if (displayedCheckboxes.length === 0) {
+        masterCheckbox.checked = false;
+        return;
+    }
+    const allChecked = Array.from(displayedCheckboxes).every(cb => cb.checked);
+    masterCheckbox.checked = allChecked;
 }
 
 function selectAllBooks(checked) {
-  const quantityInputs = document.querySelectorAll('#books-list input[type="number"]');
-  const individualCheckboxes = document.querySelectorAll('#books-list input[type="checkbox"]');
-  const value = checked ? 1 : 0;
-  quantityInputs.forEach(input => { input.value = value; });
-  individualCheckboxes.forEach(cb => {
-    if (cb.id && cb.id.startsWith('check-book-')) cb.checked = checked;
-  });
-  calculateTotal();
+    const displayedRows = document.querySelectorAll('#books-list tbody tr:not(.grand-total-row)');
+    displayedRows.forEach(row => {
+        const qtyInput = row.querySelector('input[type="number"]');
+        const individualCheckbox = row.querySelector('input[type="checkbox"]');
+        const originalIndex = individualCheckbox ? parseInt(individualCheckbox.getAttribute('data-index')) : null;
+        if (qtyInput && individualCheckbox && originalIndex !== null) {
+            const value = checked ? 1 : 0;
+            qtyInput.value = value;
+            individualCheckbox.checked = checked;
+            bookQuantities[originalIndex] = value; 
+        }
+    });
+    calculateTotal();
 }
 
 function updateQuantityAndCheckbox(element, type) {
-  const index = element.getAttribute('data-index');
-  const checkbox = document.getElementById(`check-book-${index}`);
-  const qtyInput = document.getElementById(`qty-book-${index}`);
-
-  if (!checkbox || !qtyInput) return;
-
-  if (type === 'checkbox') {
-    qtyInput.value = element.checked ? 1 : 0;
-  } else if (type === 'input') {
-    let quantity = parseInt(element.value) || 0;
-    if (quantity < 0) { quantity = 0; element.value = 0; }
-    checkbox.checked = quantity > 0;
-  }
-  calculateTotal();
+    const index = parseInt(element.getAttribute('data-index'));
+    const checkbox = document.getElementById(`check-book-${index}`);
+    const qtyInput = document.getElementById(`qty-book-${index}`);
+    if (!checkbox || !qtyInput) return;
+    if (type === 'checkbox') {
+        qtyInput.value = element.checked ? 1 : 0;
+    } else if (type === 'input') {
+        let quantity = parseInt(element.value) || 0;
+        if (quantity < 0) { quantity = 0; element.value = 0; }
+        checkbox.checked = quantity > 0;
+    }
+    bookQuantities[index] = parseInt(qtyInput.value) || 0; 
+    updateSelectAllStatus(); 
+    calculateTotal();
 }
 
 function calculateTotal() {
-  const selectedClass = document.getElementById('class-select').value;
-  if (!selectedClass) return;
-  const books = (window.bookData && window.bookData[selectedClass]) ? window.bookData[selectedClass] : [];
-  let grandTotal = 0;
-
-  const quantityInputs = document.querySelectorAll('#books-list input[type="number"]');
-  quantityInputs.forEach(input => {
-    const index = input.getAttribute('data-index');
-    const quantity = parseInt(input.value) || 0;
-    const book = books[index];
-    if (book) {
-      const totalPrice = (Number(book.Price) || 0) * quantity;
-      const el = document.getElementById(`book-${index}-total`);
-      if (el) el.textContent = totalPrice.toLocaleString();
-      grandTotal += totalPrice;
-    }
-  });
-
-  const gt = document.getElementById('grand-total');
-  if (gt) gt.textContent = grandTotal.toLocaleString() + ' BDT';
+    const selectedClass = document.getElementById('class-select').value;
+    if (!selectedClass || !currentFullBookList.length) return;
+    let grandTotal = 0;
+    currentFullBookList.forEach((book, index) => {
+        const quantity = bookQuantities[index] || 0; 
+        const price = Number(book.Price) || 0;
+        const totalPrice = price * quantity;
+        grandTotal += totalPrice;
+        const totalElement = document.getElementById(`book-${index}-total`);
+        if (totalElement) { totalElement.textContent = totalPrice.toLocaleString(); }
+    });
+    const gt = document.getElementById('grand-total');
+    if (gt) gt.textContent = grandTotal.toLocaleString() + ' BDT';
 }
 
-/* ============================================ Refactored Actions ============================================ */
-
-// 1. Helper function to gather and validate data
+/* ============================================ Actions ============================================ */
 function collectFormData() {
-    calculateTotal();
+    calculateTotal(); 
     const selectedClass = document.getElementById('class-select').value;
     const studentName = document.getElementById('student-name').value;
     const studentId = document.getElementById('student-id').value;
-
-    if (!selectedClass) { 
-        alert('Please select a Class.'); 
-        return null; 
-    }
+    if (!selectedClass) { showToast('Please select a Class.'); return null; }
 
     let finalTotal = 0;
     const salesItems = [];
-    const quantityInputs = document.querySelectorAll('#books-list input[type="number"]');
-    const books = (window.bookData && window.bookData[selectedClass]) ? window.bookData[selectedClass] : [];
-
-    quantityInputs.forEach(input => {
-        const quantity = parseInt(input.value) || 0;
+    currentFullBookList.forEach((book, index) => {
+        const quantity = bookQuantities[index] || 0; 
         if (quantity > 0) {
-            const index = input.getAttribute('data-index');
-            const book = books[index];
             const price = Number(book.Price) || 0;
             const totalPrice = price * quantity;
             finalTotal += totalPrice;
-            salesItems.push({ Subject: book.Subject, Book: book.Books, Price: price, Qty: quantity, Total: totalPrice });
+            salesItems.push({ 
+                Subject: book.Subject, 
+                Book: book.Books, 
+                Price: price, 
+                Qty: quantity, 
+                Total: totalPrice, 
+                Class: book._class || selectedClass 
+            });
         }
     });
 
-    if (salesItems.length === 0) { 
-        alert('Please select at least one book.'); 
-        return null; 
-    }
-
-    return {
-        class: selectedClass,
-        studentName: studentName,
-        studentId: studentId,
-        total: finalTotal,
-        items: salesItems
-    };
+    if (salesItems.length === 0) { showToast('Please select at least one book.'); return null; }
+    return { class: selectedClass, studentName: studentName, studentId: studentId, total: finalTotal, items: salesItems };
 }
 
-// 2. Button Action: Print Bill
 function printBill() {
     const data = collectFormData();
-    if (!data) return; // Stop if validation fails
-
+    if (!data) return; 
     const memoOutput = document.getElementById('memo-output');
     
-    // GENERATE MEMO HTML
     let memoHTML = `
       <img src="image.png" class="memo-header-img" alt="Header">
-      
       <div class="memo-meta">
         <h2>Book Sales Memo</h2>
         <table style="width:100%; margin-top:5px; border:none;">
-           <tr>
+            <tr>
               <td style="border:none;">Student Name: <strong>${data.studentName || 'N/A'}</strong></td>
               <td style="border:none; text-align:right;">Date: <strong>${new Date().toLocaleDateString('en-GB')}</strong></td>
-           </tr>
-           <tr>
+            </tr>
+            <tr>
               <td style="border:none;">Student ID: <strong>${data.studentId || 'N/A'}</strong></td>
               <td style="border:none; text-align:right;">Class: <strong>${data.class}</strong></td>
-           </tr>
+            </tr>
         </table>
       </div>
-
       <table class="memo-table">
         <thead>
           <tr>
@@ -634,10 +693,11 @@ function printBill() {
     `;
 
     data.items.forEach((item, i) => {
+      const classDisplay = (data.class === 'All Books') ? ` - <em>${escapeHtml(item.Class)}</em>` : ''; 
       memoHTML += `
         <tr>
           <td class="col-sl" style="text-align:center;">${i+1}</td>
-          <td class="col-item">${escapeHtml(item.Book)} <br><span style="color:#555; font-size:0.9em;">(${escapeHtml(item.Subject)})</span></td>
+          <td class="col-item">${escapeHtml(item.Book)} <br><span style="color:#555; font-size:0.9em;">(${escapeHtml(item.Subject)})${classDisplay}</span></td>
           <td class="col-price">${item.Price.toLocaleString()}</td>
           <td class="col-qty">${item.Qty}</td>
           <td class="col-total">${item.Total.toLocaleString()}</td>
@@ -651,32 +711,21 @@ function printBill() {
           <td class="col-total">${data.total.toLocaleString()} BDT</td>
         </tr>
       </tbody></table>
-      
       <div class="footer-credit">System/Design/&/Developed/by/NA_Niloy</div>
     `;
 
     memoOutput.innerHTML = memoHTML;
-    
-    // Trigger Print
     window.print();
 }
 
-// 3. Button Action: Save Data
 function saveData() {
     const data = collectFormData();
-    if (!data) return; // Stop if validation fails
-
-    // Add secret for Google Script
+    if (!data) return; 
     const payload = { ...data, secret: SCRIPT_SECRET_KEY };
     
-    if (!SCRIPT_URL.includes('/s/')) {
-        alert("Script URL is missing or invalid.");
-        return;
-    }
-
-    // Visual Feedback (optional, simplified)
-    const originalText = document.querySelector('.btn-blue').innerText;
-    document.querySelector('.btn-blue').innerText = "Saving...";
+    const btn = document.querySelector('.btn-blue');
+    const originalText = btn ? btn.innerText : 'Save Data';
+    if (btn) btn.innerText = "Saving...";
 
     fetch(SCRIPT_URL, {
         method: 'POST', mode: 'no-cors',
@@ -684,23 +733,30 @@ function saveData() {
         body: JSON.stringify(payload)
     })
     .then(() => {
-        alert("Data sent to Google Sheet!");
-        document.querySelector('.btn-blue').innerText = originalText;
+        showToast("Data sent successfully! Creating new bill...");
+        if (btn) btn.innerText = originalText;
+        resetForm(); 
     })
     .catch(err => {
         console.error("Logging Failed:", err);
-        alert("Failed to save data. Check console.");
-        document.querySelector('.btn-blue').innerText = originalText;
+        showToast("Failed to save data. Check console.");
+        if (btn) btn.innerText = originalText;
     });
 }
 
 function resetForm() {
-  document.getElementById('class-select').value = '';
-  document.getElementById('student-name').value = '';
-  document.getElementById('student-id').value = '';
-  document.getElementById('books-list').innerHTML = '';
+    document.getElementById('class-select').value = '';
+    document.getElementById('student-name').value = '';
+    document.getElementById('student-id').value = '';
+    const searchInput = document.getElementById('book-search');
+    if (searchInput) searchInput.value = '';
+    document.getElementById('books-list').innerHTML = '';
+    currentFullBookList = [];
+    bookQuantities = {};
+    window.bookData = {}; 
+    const gt = document.getElementById('grand-total');
+    if (gt) gt.textContent = '0 BDT';
 }
-window.bookData = window.bookData || {};
 </script>
 </body>
 </html>
